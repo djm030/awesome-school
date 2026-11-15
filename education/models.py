@@ -56,9 +56,9 @@ class Application(models.Model):
         CANCELLED = "cancelled", "취소"
 
     class TimeSlot(models.TextChoices):
-        MORNING = "morning", "오전 (09–12시)"
-        AFTERNOON = "afternoon", "오후 (13–15시)"
-        AFTER_SCHOOL = "after_school", "방과 후 (15–18시)"
+        MORNING = "morning", "오전 (09~12시)"
+        AFTERNOON = "afternoon", "오후 (13~15시)"
+        AFTER_SCHOOL = "after_school", "방과 후 (15~18시)"
 
     ACTIVE_STATUSES = (Status.RECEIVED, Status.REVIEWING)
 
