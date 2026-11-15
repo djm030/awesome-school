@@ -1,5 +1,5 @@
 #!/bin/bash
-# EC2 first boot: install Docker + Compose, add 2GB swap for builds
+# Runs on the first EC2 boot. Installs Docker and Compose and adds 2 GB of swap for image builds.
 set -e
 apt-get update
 apt-get install -y docker.io docker-compose-v2 docker-buildx

@@ -1,5 +1,5 @@
-# 서버 시계는 UTC. send_mails 는 Django TIME_ZONE(Asia/Seoul) 기준으로 판단한다.
-# 1분마다 보낼 차례인 메일 발송 (flock: 이전 실행이 안 끝났으면 건너뜀)
+# 서버 시계는 UTC다. send_mails는 발송 시점을 Django TIME_ZONE(Asia/Seoul) 기준으로 판단한다.
+# 1분마다 발송할 때가 된 메일을 보낸다. 이전 실행이 끝나지 않았으면 flock이 이번 실행을 건너뛴다.
 * * * * * cd /home/ubuntu/app && flock -n /tmp/send_mails.lock docker compose exec -T web python manage.py send_mails >> /home/ubuntu/cron.log 2>&1
-# 매일 08:00 KST(= 23:00 UTC) 신청 목록 시트 덮어쓰기
+# 매일 08:00 KST(23:00 UTC)에 신청 목록 시트를 덮어쓴다.
 0 23 * * * cd /home/ubuntu/app && docker compose exec -T web python manage.py export_sheets >> /home/ubuntu/cron.log 2>&1

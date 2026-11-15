@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# aws.sh 로 만든 리소스를 모두 삭제한다 (DB 스냅샷 없이). 되돌릴 수 없다.
+# aws.sh로 만든 리소스를 모두 삭제한다. DB 스냅샷을 남기지 않으므로 되돌릴 수 없다.
 set -euo pipefail
 export AWS_REGION=ap-northeast-2
 source secrets/aws.env

@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
-# 코드 배포: 작업 트리(.gitignore 대상 제외)를 서버에 복사하고 다시 빌드·마이그레이션한다.
-# 처음 배포할 때는 `deploy/deploy.sh --seed` 로 교육 시드 데이터까지 넣는다.
+# .gitignore 대상을 뺀 작업 트리를 서버에 복사한 뒤 이미지를 다시 빌드하고 마이그레이션한다.
+# 처음 배포할 때는 --seed를 붙여 교육 시드 데이터도 넣는다.
 set -euo pipefail
 source secrets/aws.env
 KEY=secrets/awesome-school.pem

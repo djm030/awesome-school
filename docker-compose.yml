@@ -13,7 +13,7 @@ services:
     volumes: ["./Caddyfile:/etc/caddy/Caddyfile:ro", "caddy_data:/data"]
     depends_on: [web]
 
-  # 로컬 개발용 DB (서버는 RDS)
+  # 로컬 개발용 DB다. 서버는 RDS를 쓴다.
   db:
     image: postgres:17
     profiles: [local]
