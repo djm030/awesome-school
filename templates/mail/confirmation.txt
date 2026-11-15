@@ -1,0 +1,16 @@
+{% autoescape off %}{{ application.name }} 선생님, 안녕하세요. 히어로스쿨입니다.
+
+{{ application.organization }}의 "{{ application.course.name }}" 수업 신청이 접수되었습니다.
+
+- 연락 가능 날짜: {{ application.contact_date|date:"n월 j일(D)" }}
+- 연락 가능 시간대: {{ application.get_contact_slot_display }}
+- 연락처: {{ application.phone }}
+- 수업 장소: {{ application.address }} {{ application.address_detail }}
+
+위 날짜·시간대에 담당자가 상담 전화를 드리고, 수업 일정과 교시 수, 견적을 함께 정하겠습니다.
+연락 당일 아침에 안내 메일을 한 번 더 보내 드립니다.
+
+일정이 바뀌거나 신청을 취소하시려면 이 메일에 회신해 주세요.
+
+히어로스쿨 드림
+{% endautoescape %}

@@ -1,0 +1,10 @@
+{
+  "private": true,
+  "scripts": {
+    "css": "sass static/scss/main.scss static/css/main.css --no-source-map --style=compressed",
+    "css:watch": "sass static/scss/main.scss static/css/main.css --no-source-map --watch"
+  },
+  "devDependencies": {
+    "sass": "1.108.2"
+  }
+}

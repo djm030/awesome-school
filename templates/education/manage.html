@@ -1,0 +1,88 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}신청 관리 | 히어로스쿨{% endblock %}
+{% block nav %}
+<a class="btn btn-ghost btn-sm" href="{% url 'admin:index' %}">Django admin</a>
+<form method="post" action="{% url 'admin:logout' %}">{% csrf_token %}<button class="btn btn-ghost btn-sm">로그아웃</button></form>
+{% endblock %}
+
+{% block content %}
+<section class="section manage" id="manage"
+  data-api="{% url 'application-list' %}"
+  data-export-api="{% url 'export-sheets' %}"
+  data-admin-url="{% url 'admin:education_application_change' 0 %}"
+  data-login="{% url 'admin:login' %}?next={{ request.path|urlencode }}"
+  data-today="{{ today|date:'Y-m-d' }}">
+  {% csrf_token %}
+  <div class="container">
+    <div class="manage-head">
+      <div>
+        <p class="eyebrow">관리자 전용</p>
+        <h1>신청 관리</h1>
+      </div>
+      <div class="export">
+        <button type="button" class="btn btn-ghost" id="export-button">Google 시트로 내보내기</button>
+        {% if sheet_url %}<a href="{{ sheet_url }}" target="_blank" rel="noopener">시트 열기</a>{% endif %}
+      </div>
+    </div>
+
+    <form id="filters" class="filters" role="search">
+      <label>상태
+        <select name="status">
+          <option value="">전체</option>
+          {% for value, label in statuses %}<option value="{{ value }}">{{ label }}</option>{% endfor %}
+        </select>
+      </label>
+      <label>연락 가능 날짜 <input type="date" name="contact_date"></label>
+      <label class="grow">검색 <input type="search" name="q" placeholder="기관명·이름·이메일·연락처"></label>
+      <button type="button" class="btn btn-ghost btn-sm" id="today-button">오늘 연락할 신청</button>
+      <button type="reset" class="btn btn-ghost btn-sm">초기화</button>
+    </form>
+
+    <p id="status-message" class="muted" role="status" aria-live="polite"></p>
+
+    <div class="table-wrap">
+      <table class="applications">
+        <thead>
+          <tr><th>신청일</th><th>기관 · 신청자</th><th>연락처</th><th>연락 가능</th><th>상태</th><th>메모</th><th></th></tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </div>
+
+  <template id="row-template">
+    <tr>
+      <td data-field="created_at"></td>
+      <td>
+        <strong data-field="organization"></strong> <span data-field="name"></span>
+        <span class="badge" data-duplicate hidden title="같은 이메일로 진행 중인 신청이 또 있습니다">중복</span>
+        <small class="muted" data-field="address"></small>
+      </td>
+      <td><span data-field="phone"></span><small class="muted" data-field="email"></small></td>
+      <td><span data-field="contact_date"></span><small class="muted" data-field="contact_slot"></small></td>
+      <td>
+        <select aria-label="상태 변경">
+          {% for value, label in statuses %}<option value="{{ value }}">{{ label }}</option>{% endfor %}
+        </select>
+      </td>
+      <td class="memo"><span data-field="memo"></span><button type="button" class="link" data-memo>메모</button></td>
+      <td><a data-admin href="#">상세</a></td>
+    </tr>
+  </template>
+
+  <dialog id="memo-dialog">
+    <form method="dialog">
+      <h2>관리자 메모</h2>
+      <p class="muted" id="memo-target"></p>
+      <textarea name="memo" rows="5" aria-label="메모 내용"></textarea>
+      <div class="actions">
+        <button class="btn btn-ghost btn-sm" value="cancel">닫기</button>
+        <button class="btn btn-primary btn-sm" value="save">저장</button>
+      </div>
+    </form>
+  </dialog>
+</section>
+{% endblock %}
+
+{% block scripts %}<script src="{% static 'js/manage.js' %}"></script>{% endblock %}

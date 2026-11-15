@@ -1,0 +1,83 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}{{ course.name }} | 히어로스쿨{% endblock %}
+{% block nav %}<a class="btn btn-primary btn-sm" href="{% url 'apply' course.slug %}">수업 신청</a>{% endblock %}
+
+{% block content %}
+<section class="hero">
+  <div class="container hero-grid">
+    <div>
+      <p class="eyebrow">찾아가는 교육 · 히어로코치가 학교로 갑니다</p>
+      <h1>{{ course.name }}</h1>
+      <p class="lead">{{ course.summary }}</p>
+      <p class="chip">{{ course.format_note }}</p>
+      <div class="actions">
+        <a class="btn btn-primary" href="{% url 'apply' course.slug %}">우리 학교에 신청하기</a>
+        <a class="btn btn-ghost" href="#curriculum">커리큘럼 보기</a>
+      </div>
+    </div>
+    <img class="hero-image" src="{% static course.image %}" alt="{{ course.name }} 대표 캐릭터" width="640" height="715">
+  </div>
+</section>
+
+<section class="section">
+  <div class="container">
+    <h2>교육목표</h2>
+    <ul class="cards cards-3">
+      {% for goal in course.goals %}
+      <li class="card">
+        <h3>{{ goal.title }}</h3>
+        <p>{{ goal.body }}</p>
+      </li>
+      {% endfor %}
+    </ul>
+  </div>
+</section>
+
+<section class="section section-tint" id="curriculum">
+  <div class="container">
+    <h2>{{ course.curriculum.all|length }}교시 커리큘럼</h2>
+    <p class="muted">{{ course.format_note }}</p>
+    <ol class="curriculum">
+      {% for item in course.curriculum.all %}
+      <li class="card">
+        <span class="period">{{ item.period }}교시</span>
+        <h3>{{ item.topic }}</h3>
+        <p class="activity">{{ item.activity }}</p>
+        <p>{{ item.content }}</p>
+      </li>
+      {% endfor %}
+    </ol>
+  </div>
+</section>
+
+<section class="section">
+  <div class="container">
+    <h2>이런 학생들에게 추천해요</h2>
+    <ul class="checklist">
+      {% for target in course.targets %}<li>{{ target }}</li>{% endfor %}
+    </ul>
+  </div>
+</section>
+
+{% if course.photos %}
+<section class="section section-tint">
+  <div class="container">
+    <h2>수업 현장</h2>
+    <div class="gallery">
+      {% for photo in course.photos %}
+      <img src="{% static photo %}" alt="{{ course.name }} 수업 현장 사진 {{ forloop.counter }}" loading="lazy" width="960" height="720">
+      {% endfor %}
+    </div>
+  </div>
+</section>
+{% endif %}
+
+<section class="section cta">
+  <div class="container">
+    <h2>우리 학교에서도 {{ course.name }} 수업을 열고 싶다면</h2>
+    <p>신청서를 남겨 주시면 원하시는 날짜·시간대에 담당자가 상담 전화를 드립니다.</p>
+    <a class="btn btn-light" href="{% url 'apply' course.slug %}">수업 신청하기</a>
+  </div>
+</section>
+{% endblock %}
