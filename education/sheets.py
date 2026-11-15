@@ -16,10 +16,10 @@ def sheet_rows():
 
 
 def export_applications():
-    """신청 목록 시트를 지금 DB 의 전체 신청으로 덮어쓴다. 시트는 보고용 사본이다. 내보낸 행 수를 돌려준다."""
+    """신청 목록 시트를 지금 DB에 있는 전체 신청으로 덮어쓰고 내보낸 행 수를 돌려준다. 시트는 보고용 사본이다."""
     rows = list(sheet_rows())
-    note = f"※ 시스템에서 내보낸 사본입니다. 내보낼 때마다 전체가 덮어써지니 여기서 고치지 마세요. (내보낸 시각 {timezone.localtime():%Y-%m-%d %H:%M})"
+    note = f"※ 시스템에서 내보낸 사본입니다. 내보낼 때마다 시스템이 시트 전체를 덮어쓰니 여기서 고치지 마세요. 내보낸 시각은 {timezone.localtime():%Y-%m-%d %H:%M}입니다."
     sheet = gspread.service_account(filename=settings.GOOGLE_SERVICE_ACCOUNT_FILE).open_by_key(settings.GOOGLE_SHEET_ID).sheet1
     sheet.clear()
-    sheet.update([[note], HEADER, *rows], value_input_option="RAW")  # RAW: 010-... 이 숫자로 바뀌지 않게
+    sheet.update([[note], HEADER, *rows], value_input_option="RAW")  # RAW로 넣어야 010으로 시작하는 연락처가 숫자로 바뀌지 않는다
     return len(rows)

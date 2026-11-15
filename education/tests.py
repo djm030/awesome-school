@@ -28,7 +28,7 @@ class ApplicationCreateTests(TestCase):
     fixtures = ["ai_hero"]
 
     def setUp(self):
-        cache.clear()  # throttle 카운트 초기화
+        cache.clear()  # 앞선 테스트의 신청 횟수가 throttle에 걸리지 않게 한다
 
     def post(self, **overrides):
         return self.client.post("/api/applications/", {**VALID, **overrides}, content_type="application/json")
@@ -39,7 +39,7 @@ class ApplicationCreateTests(TestCase):
         self.assertEqual(Application.objects.get().status, Application.Status.RECEIVED)
 
     def test_contact_date_must_be_weekday_within_30_days_from_tomorrow(self):
-        for day in ["2026-11-16", "2026-11-21", "2026-12-17"]:  # 오늘, 토요일, 31일 뒤
+        for day in ["2026-11-16", "2026-11-21", "2026-12-17"]:  # 오늘, 토요일, 31일 뒤는 모두 거절한다
             with self.subTest(day=day):
                 self.assertEqual(self.post(contact_date=day).status_code, 400)
         self.assertEqual(self.post(contact_date="2026-12-16").status_code, 201)  # 30일 뒤 수요일
@@ -90,7 +90,7 @@ class MailTests(TestCase):
         self.assertEqual(mail.outbox[0].to, ["minji@example.com"])
 
     def test_reminder_goes_once_from_8am_on_contact_date(self):
-        self.run_at(2026, 11, 16, 10, 0)  # 접수 확인 메일 먼저
+        self.run_at(2026, 11, 16, 10, 0)
         self.assertEqual(self.run_at(2026, 11, 17, 7, 59), 0)
         self.assertEqual(self.run_at(2026, 11, 17, 8, 0), 1)
         self.assertEqual(self.run_at(2026, 11, 17, 8, 1), 0)
@@ -121,4 +121,4 @@ class SheetExportTests(TestCase):
         sheet.clear.assert_called_once()
         values = sheet.update.call_args.args[0]
         self.assertEqual(values[1][0], "ID")
-        self.assertEqual(values[2][6], "010-1234-5678")  # 연락처는 문자열 그대로
+        self.assertEqual(values[2][6], "010-1234-5678")  # RAW 입력이라 연락처가 문자열로 남는다

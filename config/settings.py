@@ -1,4 +1,4 @@
-"""환경변수로만 설정한다. 로컬은 `uv run --env-file .env ...`, 서버는 docker compose `env_file`."""
+"""모든 설정을 환경변수에서 읽는다. 로컬에서는 `uv run --env-file .env`가, 서버에서는 docker compose의 `env_file`이 값을 넣는다."""
 
 import os
 from pathlib import Path
@@ -88,7 +88,7 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 LOGIN_URL = "admin:login"
 
-# Caddy 뒤에서 HTTPS 를 인식하도록
+# Caddy가 HTTPS를 받아 HTTP로 넘기므로 원래 요청이 HTTPS였는지는 X-Forwarded-Proto 헤더로 판단한다.
 SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
 SESSION_COOKIE_SECURE = CSRF_COOKIE_SECURE = not DEBUG
 
@@ -98,7 +98,7 @@ REST_FRAMEWORK = {
     "DEFAULT_THROTTLE_RATES": {"anon": "20/hour"},
 }
 
-# 메일: EMAIL_HOST_USER 가 있으면 SMTP(Gmail 기본, EMAIL_HOST 로 SES 등 교체), 없으면 콘솔 출력
+# EMAIL_HOST_USER가 비어 있으면 메일을 콘솔에 출력한다. EMAIL_HOST를 바꾸면 Gmail 대신 SES 같은 다른 SMTP 서버로 보낸다.
 EMAIL_HOST_USER = os.environ.get("EMAIL_HOST_USER", "")
 if EMAIL_HOST_USER:
     EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
@@ -111,6 +111,5 @@ else:
     EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
 DEFAULT_FROM_EMAIL = os.environ.get("DEFAULT_FROM_EMAIL", f"히어로스쿨 <{EMAIL_HOST_USER or 'noreply@localhost'}>")
 
-# Google Sheets 내보내기 (서비스 계정)
 GOOGLE_SERVICE_ACCOUNT_FILE = os.environ.get("GOOGLE_SERVICE_ACCOUNT_FILE", "")
 GOOGLE_SHEET_ID = os.environ.get("GOOGLE_SHEET_ID", "")

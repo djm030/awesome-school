@@ -1,4 +1,4 @@
-// 빌드: npm run css  →  static/css/main.css (빌드 결과도 커밋한다)
+// npm run css가 이 파일을 static/css/main.css로 빌드한다. 서버 이미지에는 Node가 없으므로 빌드 결과도 커밋한다.
 
 $primary: #5b3fd9;
 $primary-dark: #4329b8;
@@ -35,7 +35,6 @@ h3 { font-size: 1.1rem; }
 .muted { color: $muted; }
 .eyebrow { color: $primary; font-weight: 700; margin: 0 0 .5rem; }
 
-// 버튼
 .btn {
   display: inline-flex; align-items: center; justify-content: center;
   min-height: 48px; padding: 0 22px; border-radius: 999px;
@@ -51,7 +50,6 @@ h3 { font-size: 1.1rem; }
 .btn-sm { min-height: 40px; padding: 0 16px; font-size: .95rem; }
 .btn-block { width: 100%; }
 
-// 머리말·꼬리말
 .site-header {
   position: sticky; top: 0; z-index: 10;
   background: rgba(#fff, .9); backdrop-filter: blur(8px);
@@ -62,7 +60,6 @@ h3 { font-size: 1.1rem; }
 .logo { font-weight: 800; font-size: 1.2rem; text-decoration: none; color: $text; }
 .site-footer { border-top: 1px solid $border; color: $muted; font-size: .9rem; padding: 24px 0 40px; }
 
-// 섹션
 .section { padding: 56px 0; @include up(720px) { padding: 80px 0; } }
 .section-tint { background: $tint; }
 
@@ -80,7 +77,6 @@ h3 { font-size: 1.1rem; }
 .chip { display: inline-block; background: #fff; border: 1px solid $border; border-radius: 999px; padding: 6px 14px; font-size: .95rem; }
 .actions { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 20px; }
 
-// 카드
 .cards { list-style: none; padding: 0; margin: 24px 0 0; display: grid; gap: 16px; }
 .cards-3 { @include up(720px) { grid-template-columns: repeat(3, 1fr); } }
 .card {
@@ -114,7 +110,6 @@ h3 { font-size: 1.1rem; }
   p { opacity: .9; margin: 0 0 24px; }
 }
 
-// 신청 페이지
 .apply-grid {
   display: grid; gap: 32px;
   @include up(960px) { grid-template-columns: 1fr 1.4fr; align-items: start; }
@@ -172,7 +167,6 @@ input[type=radio], input[type=checkbox] { accent-color: $primary; width: 18px; h
   &:focus { outline: none; }
 }
 
-// 관리자 신청 관리
 .site-header nav { display: flex; gap: 8px; align-items: center; form { margin: 0; } }
 .manage-head { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: end; gap: 16px; margin-bottom: 20px; }
 .export { display: flex; align-items: center; gap: 12px; }

@@ -19,7 +19,7 @@ class CourseSerializer(serializers.ModelSerializer):
 
 
 class ApplicationCreateSerializer(serializers.ModelSerializer):
-    """신청자가 쓰는 공개 POST. 상태·메모는 받지 않는다."""
+    """신청자가 쓰는 공개 접수용이다. 상태와 메모는 입력받지 않는다."""
 
     course = serializers.SlugRelatedField(slug_field="slug", queryset=Course.objects.all())
     privacy_agreed = serializers.BooleanField(write_only=True)
@@ -51,7 +51,7 @@ class ApplicationCreateSerializer(serializers.ModelSerializer):
 
 
 class ApplicationStaffSerializer(serializers.ModelSerializer):
-    """관리자용 조회·수정. 바꿀 수 있는 건 상태와 메모뿐이다."""
+    """관리자가 조회하고 수정할 때 쓴다. 바꿀 수 있는 필드는 상태와 메모뿐이다."""
 
     course = serializers.CharField(source="course.name", read_only=True)
     status_display = serializers.CharField(source="get_status_display", read_only=True)

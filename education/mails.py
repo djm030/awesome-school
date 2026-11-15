@@ -6,12 +6,12 @@ from django.template.loader import render_to_string
 from .models import Application
 
 logger = logging.getLogger(__name__)
-REMINDER_HOUR = 8  # 연락 안내 메일은 연락 가능 날짜 당일 이 시각 이후에 보낸다
+REMINDER_HOUR = 8  # 연락 가능 날짜 당일, 연락 안내 메일을 보내기 시작하는 시각
 
 
 def send_due_mails(now):
-    """보낼 차례인 메일을 보내고 보낸 시각을 기록한다. 실패한 메일은 기록하지 않아 다음 실행에서 다시 보낸다."""
-    # ponytail: 동시 실행 방지는 cron 의 flock(서버 한 대)뿐. 여러 대에서 돌리면 select_for_update(skip_locked=True) 추가
+    """발송할 때가 된 메일을 보내고 발송 시각을 기록한다. 실패한 메일은 기록하지 않으므로 다음 실행에서 다시 보낸다."""
+    # ponytail: 동시 실행을 막는 장치는 cron의 flock 하나이고 서버 한 대 안에서만 통한다. 여러 대에서 돌리면 select_for_update(skip_locked=True)를 추가한다.
     sent = 0
     unconfirmed = Application.objects.filter(confirmation_sent_at__isnull=True).exclude(status=Application.Status.CANCELLED)
     for application in unconfirmed.select_related("course"):

@@ -1,4 +1,3 @@
-// 관리자 신청 목록: 필터가 바뀔 때마다 API 로 다시 불러와 표만 갈아 끼우고, 상태·메모는 PATCH 로 바로 저장한다.
 (() => {
   const root = document.getElementById("manage");
   const csrf = root.querySelector("[name=csrfmiddlewaretoken]").value;
@@ -17,7 +16,7 @@
       headers: { "Content-Type": "application/json", "X-CSRFToken": csrf },
     });
     if (response.status === 403) {
-      location.href = login; // 세션 만료
+      location.href = login; // staff 세션이 끝났거나 권한이 없으면 로그인 화면으로 보낸다
       throw new Error("다시 로그인해 주세요.");
     }
     const body = await response.json().catch(() => ({}));
@@ -65,7 +64,7 @@
     try {
       await request(`${api}${application.id}/`, { method: "PATCH", body: JSON.stringify(changes) });
       await load(); // 상태가 바뀌면 다른 행의 중복 표시도 달라질 수 있다
-      say(`${application.organization} ${application.name}: 저장했습니다.`);
+      say(`${application.organization} ${application.name} 신청을 저장했습니다.`);
     } catch (error) {
       say(`저장하지 못했습니다. ${error.message}`);
       await load();

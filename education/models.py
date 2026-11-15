@@ -40,7 +40,7 @@ class CurriculumItem(models.Model):
 
 class ApplicationQuerySet(models.QuerySet):
     def with_duplicate_flag(self):
-        """중복 신청: 같은 이메일·같은 교육으로 진행 중(접수·확인중)인 다른 신청이 있는 진행 중 신청."""
+        """진행 중(접수·확인중)인 신청에 같은 이메일, 같은 교육의 진행 중 신청이 하나 더 있으면 is_duplicate가 참이다."""
         others = Application.objects.filter(
             course=OuterRef("course"), email__iexact=OuterRef("email"), status__in=Application.ACTIVE_STATUSES
         ).exclude(pk=OuterRef("pk"))
@@ -95,5 +95,5 @@ class Application(models.Model):
 
     @staticmethod
     def contact_date_range(today):
-        """연락 가능 날짜로 고를 수 있는 기간: 내일부터 30일 뒤까지 (주말은 별도로 막는다)."""
+        """연락 가능 날짜로 고를 수 있는 첫날과 마지막 날을 돌려준다. 내일부터 30일 뒤까지이며 주말은 serializer가 따로 막는다."""
         return today + timedelta(days=1), today + timedelta(days=30)

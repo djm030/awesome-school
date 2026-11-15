@@ -21,8 +21,6 @@ from .sheets import export_applications
 logger = logging.getLogger(__name__)
 
 
-# --- 페이지 ---
-
 def home(request):
     if not (course := Course.objects.order_by("pk").first()):
         raise Http404("등록된 교육이 없습니다.")
@@ -52,8 +50,6 @@ def manage(request):
     })
 
 
-# --- API ---
-
 class CourseDetailAPI(generics.RetrieveAPIView):
     queryset = Course.objects.prefetch_related("curriculum")
     serializer_class = CourseSerializer
@@ -63,7 +59,7 @@ class CourseDetailAPI(generics.RetrieveAPIView):
 
 class ApplicationViewSet(mixins.CreateModelMixin, mixins.ListModelMixin, mixins.RetrieveModelMixin,
                          mixins.UpdateModelMixin, viewsets.GenericViewSet):
-    """POST 는 누구나(throttle), 조회·수정은 staff 만. 삭제는 Django admin 에서."""
+    """신청 접수(POST)는 누구나 할 수 있고 IP당 횟수 제한을 둔다. 조회와 수정은 staff만 한다. 삭제는 Django admin에서만 한다."""
 
     http_method_names = ["get", "post", "patch", "head", "options"]
 
@@ -77,7 +73,7 @@ class ApplicationViewSet(mixins.CreateModelMixin, mixins.ListModelMixin, mixins.
         return ApplicationCreateSerializer if self.action == "create" else ApplicationStaffSerializer
 
     def get_queryset(self):
-        # ponytail: 페이지네이션 없음. 신청이 수천 건을 넘으면 DRF PageNumberPagination 추가
+        # ponytail: 페이지네이션이 없다. 신청이 수천 건을 넘으면 DRF PageNumberPagination을 붙인다.
         qs = Application.objects.select_related("course").with_duplicate_flag()
         params = self.request.query_params
         if status := params.get("status"):
@@ -92,7 +88,7 @@ class ApplicationViewSet(mixins.CreateModelMixin, mixins.ListModelMixin, mixins.
 
 
 class SheetExportAPI(APIView):
-    """신청 목록 시트 덮어쓰기. 실패해도 신청 데이터에는 영향이 없다."""
+    """신청 목록 시트를 덮어쓴다. 실패해도 DB의 신청 데이터는 그대로다."""
 
     permission_classes = [IsAdminUser]
 
@@ -101,7 +97,7 @@ class SheetExportAPI(APIView):
             return Response({"detail": "Google 시트 설정(GOOGLE_SERVICE_ACCOUNT_FILE, GOOGLE_SHEET_ID)이 없습니다."}, status=503)
         try:
             rows = export_applications()
-        except Exception as error:  # 키 파일·권한·Google API 장애를 관리자에게 그대로 보여 준다
+        except Exception as error:  # 키 파일, 시트 권한, Google API 장애 중 무엇이든 원인을 관리자 화면에 보여 준다
             logger.exception("시트 내보내기 실패")
             return Response({"detail": f"Google 시트 오류: {error}"}, status=502)
         return Response({"rows": rows})

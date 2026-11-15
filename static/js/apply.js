@@ -1,4 +1,3 @@
-// 신청 폼: 카카오 우편번호 검색 + fetch 로 DRF API 에 제출하고 결과를 같은 자리에서 보여 준다.
 (() => {
   const form = document.getElementById("apply-form");
   const done = document.getElementById("apply-done");
@@ -52,7 +51,7 @@
     data.course = form.dataset.course;
     data.privacy_agreed = form.privacy_agreed.checked;
 
-    button.disabled = true; // 중복 신청은 막지 않으므로 더블클릭만은 여기서 막는다
+    button.disabled = true; // 서버가 중복 신청을 막지 않으므로 더블클릭으로 두 번 제출되는 것만 여기서 막는다
     button.textContent = "보내는 중…";
     try {
       const response = await fetch(form.dataset.api, {
