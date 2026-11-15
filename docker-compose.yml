@@ -1,0 +1,26 @@
+services:
+  web:
+    build: .
+    env_file: .env
+    restart: unless-stopped
+    volumes: ["./secrets:/app/secrets:ro"]
+
+  caddy:
+    image: caddy:2
+    restart: unless-stopped
+    environment: { DOMAIN: "${DOMAIN}" }
+    ports: ["80:80", "443:443"]
+    volumes: ["./Caddyfile:/etc/caddy/Caddyfile:ro", "caddy_data:/data"]
+    depends_on: [web]
+
+  # 로컬 개발용 DB (서버는 RDS)
+  db:
+    image: postgres:17
+    profiles: [local]
+    environment: { POSTGRES_DB: awesome_school, POSTGRES_PASSWORD: postgres }
+    ports: ["5432:5432"]
+    volumes: ["pgdata:/var/lib/postgresql/data"]
+
+volumes:
+  caddy_data:
+  pgdata:
