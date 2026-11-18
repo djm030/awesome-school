@@ -9,6 +9,8 @@ flowchart LR
   user[신청자·관리자 브라우저] -- HTTPS 443 --> caddy
   subgraph EC2 t4g.small · Ubuntu 24.04 arm64 · Elastic IP
     caddy[Caddy<br/>HTTPS 종료, 인증서 자동 갱신] --> web[Django + gunicorn<br/>WhiteNoise 정적 파일]
+    caddy -. /media/ .-> media[(Docker 볼륨 media<br/>업로드 이미지)]
+    web --> media
     cron[cron<br/>1분마다 send_mails<br/>매일 08:00 export_sheets] -. docker compose exec .-> web
   end
   web -- 5432 --> rds[(RDS PostgreSQL 17<br/>db.t4g.micro, 외부 비공개)]
@@ -41,10 +43,10 @@ flowchart LR
 | 스크립트 | 하는 일 |
 |---|---|
 | `deploy/aws.sh` | 보안 그룹, RDS, 키 페어, EC2(user-data로 Docker 설치), Elastic IP를 만든다. 리소스 ID는 `secrets/aws.env`에, 서버 환경변수는 `secrets/prod.env`에 남긴다. DB 비밀번호와 `SECRET_KEY`는 무작위로 만든다. 처음 한 번만 실행한다. |
-| `deploy/deploy.sh [--seed]` | git이 추적하는 파일을 서버로 복사하고 `.env`를 올린다. 그다음 `docker compose up -d --build`, 마이그레이션, crontab 등록을 한다. `--seed`를 붙이면 교육 시드 데이터도 넣는다. |
+| `deploy/deploy.sh [--seed]` | git이 추적하는 파일을 서버로 복사하고 `.env`를 올린다. 그다음 `docker compose up -d --build`, 마이그레이션, crontab 등록을 한다. `--seed`를 붙이면 교육 시드 데이터와 이미지도 넣는다. |
 | `deploy/teardown.sh` | EC2, Elastic IP, RDS(스냅샷 없이), 보안 그룹, 키 페어를 삭제한다. |
 
-비밀값(`secrets/`, `.env`)은 git에 올리지 않고 `scp`로만 서버에 보냅니다. 컨테이너는 `restart: unless-stopped`라서 서버를 재부팅하면 다시 뜹니다.
+관리자가 올린 교육 이미지는 Docker 볼륨 `media`에 저장합니다. Caddy가 `/media/` 요청을 Django를 거치지 않고 바로 서빙합니다. 비밀값(`secrets/`, `.env`)은 git에 올리지 않고 `scp`로만 서버에 보냅니다. 컨테이너는 `restart: unless-stopped`라서 서버를 재부팅하면 다시 뜹니다.
 
 ## 운영 서비스로 키운다면
 
@@ -58,7 +60,7 @@ flowchart LR
 | Gmail SMTP | Amazon SES (도메인 인증, 샌드박스 해제) | 발송량 한도, 도달률, 반송 처리. 코드는 그대로 두고 `EMAIL_HOST`만 바꿈 |
 | RDS 단일 AZ, 백업 1일 | RDS Multi-AZ, 백업 7일 이상, 삭제 보호 | DB 장애 조치와 실수 복구 |
 | `.env` 파일 | Secrets Manager나 SSM Parameter Store 값을 ECS 태스크 환경변수로 주입 | 비밀값 교체와 접근 기록 |
-| WhiteNoise와 정적 이미지 경로 | S3와 CloudFront (`django-storages`) | 관리자가 교육 이미지를 올릴 수 있고 CDN이 캐시함 |
+| 업로드 이미지를 EC2의 Docker 볼륨에 저장 | S3와 CloudFront (`django-storages`) | 서버를 다시 만들어도 이미지가 남고 CDN이 캐시함 |
 | 컨테이너 로그 | CloudWatch Logs, 메일 발송 실패와 5xx 알람 | 장애를 바로 알아챔 |
 | 수동 `deploy.sh` | GitHub Actions에서 테스트, ECR 푸시, ECS 배포를 차례로 실행 | 배포 실수 방지 |
 
