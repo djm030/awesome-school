@@ -8,6 +8,18 @@
 
 관리자 계정은 제출 메일에 적었습니다.
 
+## 화면
+
+| 교육 소개 | 교육 신청 (모바일) |
+|---|---|
+| ![교육 소개](docs/img/course.png) | ![교육 신청 모바일](docs/img/apply-mobile.png) |
+
+| 신청 관리 | 교육 관리 |
+|---|---|
+| ![신청 관리](docs/img/manage.png) | ![교육 관리](docs/img/course-edit.png) |
+
+![교육 신청 데스크톱](docs/img/apply.png)
+
 ## 과제 요구사항 대응
 
 | 요구사항 | 구현 | 위치 |
