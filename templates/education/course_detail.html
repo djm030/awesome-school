@@ -1,5 +1,4 @@
 {% extends "base.html" %}
-{% load static %}
 {% block title %}{{ course.name }} | 히어로스쿨{% endblock %}
 {% block nav %}<a class="btn btn-primary btn-sm" href="{% url 'apply' course.slug %}">수업 신청</a>{% endblock %}
 
@@ -16,7 +15,7 @@
         <a class="btn btn-ghost" href="#curriculum">커리큘럼 보기</a>
       </div>
     </div>
-    <img class="hero-image" src="{% static course.image %}" alt="{{ course.name }} 대표 캐릭터" width="640" height="715">
+    <img class="hero-image" src="{{ course.image.url }}" alt="{{ course.name }} 대표 캐릭터" width="640" height="715">
   </div>
 </section>
 
@@ -24,7 +23,7 @@
   <div class="container">
     <h2>교육목표</h2>
     <ul class="cards cards-3">
-      {% for goal in course.goals %}
+      {% for goal in course.goals.all %}
       <li class="card">
         <h3>{{ goal.title }}</h3>
         <p>{{ goal.body }}</p>
@@ -60,13 +59,13 @@
   </div>
 </section>
 
-{% if course.photos %}
+{% if course.photos.all %}
 <section class="section section-tint">
   <div class="container">
     <h2>수업 현장</h2>
     <div class="gallery">
-      {% for photo in course.photos %}
-      <img src="{% static photo %}" alt="{{ course.name }} 수업 현장 사진 {{ forloop.counter }}" loading="lazy" width="960" height="720">
+      {% for photo in course.photos.all %}
+      <img src="{{ photo.image.url }}" alt="{{ course.name }} 수업 현장 사진 {{ forloop.counter }}" loading="lazy" width="960" height="720">
       {% endfor %}
     </div>
   </div>

@@ -1,6 +1,11 @@
 from django.contrib import admin
 
-from .models import Application, Course, CurriculumItem
+from .models import Application, Course, CourseGoal, CoursePhoto, CurriculumItem
+
+
+class GoalInline(admin.TabularInline):
+    model = CourseGoal
+    extra = 0
 
 
 class CurriculumInline(admin.TabularInline):
@@ -8,11 +13,16 @@ class CurriculumInline(admin.TabularInline):
     extra = 0
 
 
+class PhotoInline(admin.TabularInline):
+    model = CoursePhoto
+    extra = 0
+
+
 @admin.register(Course)
 class CourseAdmin(admin.ModelAdmin):
     list_display = ["name", "slug", "summary"]
     prepopulated_fields = {"slug": ["name"]}
-    inlines = [CurriculumInline]
+    inlines = [GoalInline, CurriculumInline, PhotoInline]
 
 
 @admin.register(Application)
@@ -25,6 +35,6 @@ class ApplicationAdmin(admin.ModelAdmin):
     fieldsets = [
         ("신청 내용", {"fields": ["course", "organization", "name", "email", "phone"]}),
         ("수업 장소", {"fields": ["postcode", "address", "address_detail"]}),
-        ("상담 연락", {"fields": ["contact_date", "contact_slot", "status", "memo"]}),
+        ("상담 연락", {"fields": ["contact_date", "contact_slot", "status", "memo", "send_confirmation"]}),
         ("기록", {"fields": readonly_fields}),
     ]

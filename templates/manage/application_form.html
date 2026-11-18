@@ -1,0 +1,43 @@
+{% extends "manage/base.html" %}
+{% load static %}
+{% block title %}{% if application %}신청 수정{% else %}신청 등록{% endif %} | 히어로스쿨{% endblock %}
+
+{% block manage %}
+<div class="manage-head">
+  <div>
+    <p class="eyebrow"><a href="{% url 'manage-applications' %}">신청 관리</a></p>
+    <h1>{% if application %}{{ application.organization }} {{ application.name }}{% else %}신청 등록{% endif %}</h1>
+  </div>
+  {% if application %}<a class="btn btn-ghost btn-sm" href="{% url 'manage-application-delete' application.pk %}">삭제</a>{% endif %}
+</div>
+
+<form method="post" class="form-panel narrow">
+  {% csrf_token %}
+  {{ form.non_field_errors }}
+  {% for field in form %}
+  <div class="field">
+    {{ field.as_field_group }}
+    {% if field.name == "postcode" %}<button type="button" class="btn btn-ghost btn-sm" id="postcode-search">주소 검색</button>{% endif %}
+  </div>
+  {% endfor %}
+
+  {% if application %}
+  <dl class="record">
+    <dt>신청 시각</dt><dd>{{ application.created_at|date:"Y-m-d H:i" }}</dd>
+    <dt>수정 시각</dt><dd>{{ application.updated_at|date:"Y-m-d H:i" }}</dd>
+    <dt>접수 확인 메일</dt><dd>{% if application.confirmation_sent_at %}{{ application.confirmation_sent_at|date:"Y-m-d H:i" }}{% elif application.send_confirmation %}보내기 전{% else %}보내지 않음 (등록할 때 선택){% endif %}</dd>
+    <dt>연락 안내 메일</dt><dd>{{ application.reminder_sent|date:"Y-m-d H:i"|default:"보내기 전" }}</dd>
+  </dl>
+  {% endif %}
+
+  <div class="actions">
+    <button class="btn btn-primary">저장</button>
+    <a class="btn btn-ghost" href="{% url 'manage-applications' %}">목록으로</a>
+  </div>
+</form>
+{% endblock %}
+
+{% block scripts %}
+<script src="https://t1.kakaocdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
+<script src="{% static 'js/manage-forms.js' %}"></script>
+{% endblock %}

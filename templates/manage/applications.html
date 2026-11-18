@@ -1,26 +1,22 @@
-{% extends "base.html" %}
+{% extends "manage/base.html" %}
 {% load static %}
 {% block title %}신청 관리 | 히어로스쿨{% endblock %}
-{% block nav %}
-<a class="btn btn-ghost btn-sm" href="{% url 'admin:index' %}">Django admin</a>
-<form method="post" action="{% url 'admin:logout' %}">{% csrf_token %}<button class="btn btn-ghost btn-sm">로그아웃</button></form>
-{% endblock %}
 
-{% block content %}
-<section class="section manage" id="manage"
+{% block section_attrs %}id="manage"
   data-api="{% url 'application-list' %}"
   data-export-api="{% url 'export-sheets' %}"
-  data-admin-url="{% url 'admin:education_application_change' 0 %}"
-  data-login="{% url 'admin:login' %}?next={{ request.path|urlencode }}"
-  data-today="{{ today|date:'Y-m-d' }}">
-  {% csrf_token %}
-  <div class="container">
+  data-edit-url="{% url 'manage-application' 0 %}"
+  data-login="{% url 'login' %}?next={{ request.path|urlencode }}"
+  data-today="{{ today|date:'Y-m-d' }}"{% endblock %}
+
+{% block manage %}
     <div class="manage-head">
       <div>
         <p class="eyebrow">관리자 전용</p>
         <h1>신청 관리</h1>
       </div>
       <div class="export">
+        <a class="btn btn-primary" href="{% url 'manage-application-new' %}">신청 등록</a>
         <button type="button" class="btn btn-ghost" id="export-button">Google 시트로 내보내기</button>
         {% if sheet_url %}<a href="{{ sheet_url }}" target="_blank" rel="noopener">시트 열기</a>{% endif %}
       </div>
@@ -39,17 +35,17 @@
       <button type="reset" class="btn btn-ghost btn-sm">초기화</button>
     </form>
 
+    {% csrf_token %}
     <p id="status-message" class="muted" role="status" aria-live="polite"></p>
 
     <div class="table-wrap">
-      <table class="applications">
+      <table class="data-table">
         <thead>
           <tr><th>신청일</th><th>기관 · 신청자</th><th>연락처</th><th>연락 가능</th><th>상태</th><th>메모</th><th></th></tr>
         </thead>
         <tbody></tbody>
       </table>
     </div>
-  </div>
 
   <template id="row-template">
     <tr>
@@ -67,7 +63,7 @@
         </select>
       </td>
       <td class="memo"><span data-field="memo"></span><button type="button" class="link" data-memo>메모</button></td>
-      <td><a data-admin href="#">상세</a></td>
+      <td><a data-edit href="#">수정</a></td>
     </tr>
   </template>
 
@@ -82,7 +78,6 @@
       </div>
     </form>
   </dialog>
-</section>
 {% endblock %}
 
 {% block scripts %}<script src="{% static 'js/manage.js' %}"></script>{% endblock %}

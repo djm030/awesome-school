@@ -6,7 +6,7 @@
   const rowTemplate = document.getElementById("row-template");
   const message = document.getElementById("status-message");
   const dialog = document.getElementById("memo-dialog");
-  const { api, exportApi, adminUrl, login, today } = root.dataset;
+  const { api, exportApi, editUrl, login, today } = root.dataset;
 
   const say = (text) => (message.textContent = text);
 
@@ -39,7 +39,7 @@
     row.classList.toggle("is-today", application.contact_date === today);
     row.classList.toggle("is-closed", ["done", "cancelled"].includes(application.status));
     row.querySelector("[data-duplicate]").hidden = !application.is_duplicate;
-    row.querySelector("[data-admin]").href = adminUrl.replace("/0/", `/${application.id}/`);
+    row.querySelector("[data-edit]").href = editUrl.replace("/0/", `/${application.id}/`);
 
     const select = row.querySelector("select");
     select.value = application.status;

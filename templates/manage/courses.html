@@ -1,0 +1,31 @@
+{% extends "manage/base.html" %}
+{% block title %}교육 관리 | 히어로스쿨{% endblock %}
+
+{% block manage %}
+<div class="manage-head">
+  <div>
+    <p class="eyebrow">관리자 전용</p>
+    <h1>교육 관리</h1>
+  </div>
+  <a class="btn btn-primary" href="{% url 'manage-course-new' %}">교육 추가</a>
+</div>
+
+<div class="table-wrap">
+  <table class="data-table">
+    <thead><tr><th>교육</th><th>소개 페이지</th><th>커리큘럼</th><th>신청</th><th></th></tr></thead>
+    <tbody>
+      {% for course in courses %}
+      <tr>
+        <td><strong>{{ course.name }}</strong><small class="muted">{{ course.summary }}</small></td>
+        <td><a href="{% url 'course-detail' course.slug %}">/courses/{{ course.slug }}/</a></td>
+        <td>{{ course.period_count }}교시</td>
+        <td>{{ course.application_count }}건</td>
+        <td><a href="{% url 'manage-course' course.slug %}">수정</a></td>
+      </tr>
+      {% empty %}
+      <tr><td colspan="5">등록된 교육이 없습니다.</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}

@@ -1,7 +1,6 @@
 import logging
 
 from django.conf import settings
-from django.contrib.admin.views.decorators import staff_member_required
 from django.db.models import Q
 from django.http import Http404
 from django.shortcuts import get_object_or_404, redirect, render
@@ -22,13 +21,16 @@ logger = logging.getLogger(__name__)
 
 
 def home(request):
-    if not (course := Course.objects.order_by("pk").first()):
+    courses = list(Course.objects.all())
+    if not courses:
         raise Http404("등록된 교육이 없습니다.")
-    return redirect("course-detail", slug=course.slug)
+    if len(courses) == 1:
+        return redirect("course-detail", slug=courses[0].slug)
+    return render(request, "education/course_list.html", {"courses": courses})
 
 
 def course_detail(request, slug):
-    course = get_object_or_404(Course.objects.prefetch_related("curriculum"), slug=slug)
+    course = get_object_or_404(Course.objects.prefetch_related("goals", "curriculum", "photos"), slug=slug)
     return render(request, "education/course_detail.html", {"course": course})
 
 
@@ -40,18 +42,8 @@ def apply(request, slug):
     })
 
 
-@staff_member_required
-def manage(request):
-    sheet_id = settings.GOOGLE_SHEET_ID
-    return render(request, "education/manage.html", {
-        "statuses": Application.Status.choices,
-        "today": timezone.localdate(),
-        "sheet_url": sheet_id and f"https://docs.google.com/spreadsheets/d/{sheet_id}",
-    })
-
-
 class CourseDetailAPI(generics.RetrieveAPIView):
-    queryset = Course.objects.prefetch_related("curriculum")
+    queryset = Course.objects.prefetch_related("goals", "curriculum", "photos")
     serializer_class = CourseSerializer
     lookup_field = "slug"
     permission_classes = [AllowAny]
@@ -59,7 +51,7 @@ class CourseDetailAPI(generics.RetrieveAPIView):
 
 class ApplicationViewSet(mixins.CreateModelMixin, mixins.ListModelMixin, mixins.RetrieveModelMixin,
                          mixins.UpdateModelMixin, viewsets.GenericViewSet):
-    """신청 접수(POST)는 누구나 할 수 있고 IP당 횟수 제한을 둔다. 조회와 수정은 staff만 한다. 삭제는 Django admin에서만 한다."""
+    """신청 접수(POST)는 누구나 할 수 있고 IP당 횟수 제한을 둔다. 조회와 상태·메모 수정은 staff만 한다."""
 
     http_method_names = ["get", "post", "patch", "head", "options"]
 

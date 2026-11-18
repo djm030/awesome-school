@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+{% block nav %}
+<a class="btn btn-ghost btn-sm" href="{% url 'manage-applications' %}">신청 관리</a>
+<a class="btn btn-ghost btn-sm" href="{% url 'manage-courses' %}">교육 관리</a>
+<form method="post" action="{% url 'logout' %}">{% csrf_token %}<button class="btn btn-ghost btn-sm">로그아웃</button></form>
+{% endblock %}
+
+{% block content %}
+<section class="section manage" {% block section_attrs %}{% endblock %}>
+  <div class="container">
+    {% if messages %}
+    <ul class="messages" role="status">{% for message in messages %}<li>{{ message }}</li>{% endfor %}</ul>
+    {% endif %}
+    {% block manage %}{% endblock %}
+  </div>
+</section>
+{% endblock %}

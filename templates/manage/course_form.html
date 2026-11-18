@@ -1,0 +1,59 @@
+{% extends "manage/base.html" %}
+{% load static %}
+{% block title %}{% if course.pk %}교육 수정{% else %}교육 추가{% endif %} | 히어로스쿨{% endblock %}
+
+{% block manage %}
+<div class="manage-head">
+  <div>
+    <p class="eyebrow"><a href="{% url 'manage-courses' %}">교육 관리</a></p>
+    <h1>{% if course.pk %}{{ course.name }}{% else %}교육 추가{% endif %}</h1>
+  </div>
+  {% if course.pk %}
+  <div class="actions">
+    <a class="btn btn-ghost btn-sm" href="{% url 'course-detail' course.slug %}">소개 페이지 보기</a>
+    <a class="btn btn-ghost btn-sm" href="{% url 'manage-course-delete' course.slug %}">삭제</a>
+  </div>
+  {% endif %}
+</div>
+
+<form method="post" enctype="multipart/form-data" class="form-panel narrow">
+  {% csrf_token %}
+  {{ form.non_field_errors }}
+  <fieldset>
+    <legend>소개</legend>
+    {% for field in form %}{% if field.name != "photos" and field.name != "delete_photos" %}
+    <div class="field">
+      {% if field.name == "image" and course.image %}<img class="thumb" src="{{ course.image.url }}" alt="지금 대표 이미지" width="160" height="120">{% endif %}
+      {{ field.as_field_group }}
+    </div>
+    {% endif %}{% endfor %}
+  </fieldset>
+
+  <fieldset>
+    <legend>수업 현장 사진</legend>
+    {% if course.pk %}
+    <ul class="photo-grid">
+      {% for photo in course.photos.all %}
+      <li>
+        <img src="{{ photo.image.url }}" alt="수업 현장 사진 {{ forloop.counter }}" width="160" height="120" loading="lazy">
+        <label class="check"><input type="checkbox" name="delete_photos" value="{{ photo.pk }}"{% if photo.pk|stringformat:"s" in form.delete_photos.value %} checked{% endif %}> 삭제</label>
+      </li>
+      {% empty %}
+      <li class="muted">올린 사진이 없습니다.</li>
+      {% endfor %}
+    </ul>
+    {% endif %}
+    <div class="field">{{ form.photos.as_field_group }}</div>
+  </fieldset>
+
+  {% include "manage/formset.html" with formset=goals legend="교육목표" add_label="목표 추가" %}
+  {% include "manage/formset.html" with formset=curriculum legend="커리큘럼" add_label="교시 추가" %}
+
+  <div class="actions">
+    <button class="btn btn-primary">저장</button>
+    <a class="btn btn-ghost" href="{% url 'manage-courses' %}">목록으로</a>
+  </div>
+</form>
+{% endblock %}
+
+{% block scripts %}<script src="{% static 'js/manage-forms.js' %}"></script>{% endblock %}

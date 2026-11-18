@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+{% block title %}관리자 로그인 | 히어로스쿨{% endblock %}
+
+{% block content %}
+<section class="section">
+  <div class="container">
+    <form method="post" class="form-panel narrow">
+      {% csrf_token %}
+      <p class="eyebrow">관리자 전용</p>
+      <h1>로그인</h1>
+      {{ form.non_field_errors }}
+      <div class="field">{{ form.username.as_field_group }}</div>
+      <div class="field">{{ form.password.as_field_group }}</div>
+      <input type="hidden" name="next" value="{{ next }}">
+      <button class="btn btn-primary btn-block">로그인</button>
+    </form>
+  </div>
+</section>
+{% endblock %}

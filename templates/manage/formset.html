@@ -1,0 +1,10 @@
+<fieldset>
+  <legend>{{ legend }}</legend>
+  {{ formset.management_form }}
+  {{ formset.non_form_errors }}
+  <div id="{{ formset.prefix }}-rows">
+    {% for row in formset %}{% include "manage/formset_row.html" %}{% endfor %}
+  </div>
+  <template id="{{ formset.prefix }}-template">{% include "manage/formset_row.html" with row=formset.empty_form %}</template>
+  <button type="button" class="btn btn-ghost btn-sm" data-add-row="{{ formset.prefix }}">{{ add_label }}</button>
+</fieldset>

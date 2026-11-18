@@ -83,10 +83,15 @@ USE_TZ = True
 STATIC_URL = "static/"
 STATICFILES_DIRS = [BASE_DIR / "static"]
 STATIC_ROOT = BASE_DIR / "staticfiles"
+# 관리자가 올린 교육 이미지다. 서버에서는 Docker 볼륨에 두고 Caddy가 /media/를 직접 서빙한다.
+MEDIA_URL = "media/"
+MEDIA_ROOT = BASE_DIR / "media"
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
-LOGIN_URL = "admin:login"
+LOGIN_URL = "login"
+LOGIN_REDIRECT_URL = "manage-applications"
+LOGOUT_REDIRECT_URL = "login"
 
 # Caddy가 HTTPS를 받아 HTTP로 넘기므로 원래 요청이 HTTPS였는지는 X-Forwarded-Proto 헤더로 판단한다.
 SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")

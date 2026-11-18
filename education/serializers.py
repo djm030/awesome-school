@@ -1,7 +1,7 @@
 from django.utils import timezone
 from rest_framework import serializers
 
-from .models import Application, Course, CurriculumItem
+from .models import Application, Course, CourseGoal, CoursePhoto, CurriculumItem
 
 
 class CurriculumItemSerializer(serializers.ModelSerializer):
@@ -10,8 +10,22 @@ class CurriculumItemSerializer(serializers.ModelSerializer):
         fields = ["period", "topic", "activity", "content"]
 
 
+class CourseGoalSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = CourseGoal
+        fields = ["title", "body"]
+
+
+class CoursePhotoSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = CoursePhoto
+        fields = ["image"]
+
+
 class CourseSerializer(serializers.ModelSerializer):
+    goals = CourseGoalSerializer(many=True, read_only=True)
     curriculum = CurriculumItemSerializer(many=True, read_only=True)
+    photos = CoursePhotoSerializer(many=True, read_only=True)
 
     class Meta:
         model = Course
