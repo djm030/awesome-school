@@ -3,14 +3,14 @@ services:
     build: .
     env_file: .env
     restart: unless-stopped
-    volumes: ["./secrets:/app/secrets:ro"]
+    volumes: ["./secrets:/app/secrets:ro", "media:/app/media"]
 
   caddy:
     image: caddy:2
     restart: unless-stopped
     environment: { DOMAIN: "${DOMAIN}" }
     ports: ["80:80", "443:443"]
-    volumes: ["./Caddyfile:/etc/caddy/Caddyfile:ro", "caddy_data:/data"]
+    volumes: ["./Caddyfile:/etc/caddy/Caddyfile:ro", "caddy_data:/data", "media:/srv/media:ro"]
     depends_on: [web]
 
   # 로컬 개발용 DB다. 서버는 RDS를 쓴다.
@@ -23,4 +23,5 @@ services:
 
 volumes:
   caddy_data:
+  media:
   pgdata:

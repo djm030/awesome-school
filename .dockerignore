@@ -5,3 +5,4 @@ secrets
 staticfiles
 node_modules
 **/__pycache__
+media
